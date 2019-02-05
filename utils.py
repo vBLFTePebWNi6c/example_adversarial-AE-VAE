@@ -4,6 +4,26 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from IPython.display import clear_output
 
+def adjust_spines(ax,spines):
+    for loc, spine in ax.spines.items():
+        if loc in spines:
+            spine.set_position(('outward',10)) # outward by 10 points
+        else:
+            spine.set_color('none') # don't draw spine
+
+    # turn off ticks where there is no spine
+    if 'left' in spines:
+        ax.yaxis.set_ticks_position('left')
+    else:
+        # no yaxis ticks
+        ax.yaxis.set_ticks([])
+
+    if 'bottom' in spines:
+        ax.xaxis.set_ticks_position('bottom')
+    else:
+        # no xaxis ticks
+        ax.xaxis.set_ticks([])
+
 def visualize(text, z_space_image, z_space_range, z1, z2, labels):
     z1 = np.array(z1)
     z2 = np.array(z2)
