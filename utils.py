@@ -24,9 +24,8 @@ def adjust_spines(ax,spines):
         # no xaxis ticks
         ax.xaxis.set_ticks([])
 
-def visualize(text, z_space_image, z_space_range, z1, z2, labels):
-    z1 = np.array(z1)
-    z2 = np.array(z2)
+def visualize(text, x_samples_img, z_range, z_points, labels):
+    z1, z2 = z_points.T
     labels = np.array(labels)
 
     # Set up the axes with gridspec and add subplots
@@ -50,18 +49,23 @@ def visualize(text, z_space_image, z_space_range, z1, z2, labels):
     text_area.text(0.5, 0.5, text, horizontalalignment='center', verticalalignment='center', transform=text_area.transAxes, fontsize=24)
     
     # Z Space image
-    min_, max_ = z_space_range
-    space_img.imshow(z_space_image, cmap='gray', extent=[min_, max_, min_, max_])
-    adjust_spines(space_img, ['left', 'bottom'])
+    if z_range is not None:
+        min_, max_ = z_range
+        space_img.imshow(x_samples_img, cmap='gray', extent=[min_, max_, min_, max_])
+        adjust_spines(space_img, ['left', 'bottom'])
+    else:
+        space_img.imshow(x_samples_img, cmap='gray')
+        adjust_spines(space_img, [])
     
     # Scatter
     cmap = plt.cm.get_cmap('Spectral')
     for c in set(labels):
         scatter_ax.scatter(z1[labels == c], z2[labels == c], label=c, c=[cmap(c / 10.)])
         
-    box_width = max_ - min_
-    p = patches.Rectangle((min_, min_), box_width, box_width, fill=False, clip_on=False, linewidth=5, linestyle='--', color='k')
-    scatter_ax.add_patch(p)
+    if z_range is not None:
+        box_width = max_ - min_
+        p = patches.Rectangle((min_, min_), box_width, box_width, fill=False, clip_on=False, linewidth=5, linestyle='--', color='k')
+        scatter_ax.add_patch(p)
         
     adjust_spines(scatter_ax, ['left', 'bottom'])
     scatter_ax.legend(loc=1, ncol=10, mode="expand", borderaxespad=0., prop={'size': 14})
